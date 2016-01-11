@@ -227,7 +227,7 @@ class Math(unittest.TestCase):
 
 	def test_mlt_failure(self):
 		"""expect failure during multiply"""
-		stack.pushn([("i'm a", "tuple"), "imastring"])
+		stack. pushn([("i'm a", "tuple"), "imastring"])
 		self.assertRaises(mouse16.TypeWarning, stack.mlt())
 
 	# divmod
@@ -415,20 +415,52 @@ class StackOps(unittest.TestCase):
 
 	def test_urot(self):
 		"""rotate down the top three items on the stack"""
+		stack.pushn([0, 1, 2, 3])
+		stack.urot()
+		self.assertEqual
 
-'''
-class Types(unittest.TestCase):
-	"""interactions between certain types and operators"""
-	pass
+	def test_roll(self):
+		"""roll the entire stack up"""
+		stack.pushn([1, 2, 3, 4])
+		stack.roll()
+		self.assertEqual(stack.inspect(), [2, 3, 4, 1])
 
-class MathConst(unittest.TestCase):
-	"""tests of number-special functions and builtin constants"""
-	pass
+	def test_rolln(self):
+		"""roll the entire stack up by n"""
+		stack.pushn([1, 2, 3, 4, 5, 6, 7, 8, 9])
+		stack.rolln(5)
+		self.assertEqual(stack.inspect(), [6, 7, 8, 9, 1, 2, 3, 4, 5])
+
+	def test_uroll(self):
+		"""roll the entire stack down"""
+		stack.pushn([1, 2, 3, 4, 5])
+		stack.uroll()
+		self.assertEqual(stack.inspect(), [5, 1, 2, 3, 4])
+
+	def test_urolln(self):
+		"""roll the entire stack down by n"""
+		stack.pushn([1, 2, 3, 4, 5, 6, 7, 8, 9])
+		stack.urolln(5)
+		self.assertEqual(stack.inspect(), [5, 6, 7, 8, 9, 1, 2, 3, 4])
+
+	def test_drop(self):
+		"""sliently drop an item from the stack"""
+		stack.push(0)
+		stack.drop()
+		self.assertEqual(stack.inspect(), [])
+
+	def test_dropn(self):
+		"""silently drop n items from the stack"""
+		stack.pushn([1, 2, 3, 4, 5, 6, 7, 8])
+		stack.dropn(8)
+		self.assertEqual(stack.inspect(), [])
+
 
 class Parsing(unittest.TestCase):
 	"""tests specific to syntax and the parser, as well as the runner"""
 	pass
 
+'''
 class Runtime(unittest.TestCase):
 	"""variables, memory, function defs/calls, core language features"""
 	pass
@@ -455,6 +487,6 @@ if __name__ == '__main__':
 
 	mouse = mouse16.Mouse()
 
-	mouse16._fromfile = True  # make underflow raise SystemExit(4) for testing
+	mouse16._fromfile = True  # make underflow & zero division raise SystemExit(4)
 
 	unittest.main(verbosity=2)
