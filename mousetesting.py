@@ -1,6 +1,18 @@
 #!/usr/bin/env python3
 
-import unittest, random
+import unittest, random, sys
+from io import StringIO
+from contextlib import contextmanager
+
+
+@contextmanager
+def capture(command, *args, **kwargs):
+	out, sys.stdout = sys.stdout, StringIO()
+	command(*args, **kwargs)
+	sys.stdout.seek(0)
+	yield sys.stdout.read()
+	sys.stdout = out
+
 
 class CoreStack(unittest.TestCase):
 	"""core stack functions: direct interations with []Stack.stack"""
@@ -455,12 +467,23 @@ class StackOps(unittest.TestCase):
 		stack.dropn(8)
 		self.assertEqual(stack.inspect(), [])
 
+	def test_prn(self):
+		"""print the top of the stack"""
+		stack.push("asdasdasdasdasd")
+		with capture(stack.prn, (), ()) as output:
+			self.assertEqual(output, "asdasdasdasdasd")
 
+	def test_emit(self):
+		"""print the character at charcode on TOS"""
+		stack.push(65)
+		with capture(stack.emit, (), ()) as output:
+			self.assertEqual(output, "A")
+
+'''
 class Parsing(unittest.TestCase):
 	"""tests specific to syntax and the parser, as well as the runner"""
 	pass
 
-'''
 class Runtime(unittest.TestCase):
 	"""variables, memory, function defs/calls, core language features"""
 	pass
