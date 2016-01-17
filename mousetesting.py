@@ -1,12 +1,19 @@
 #!/usr/bin/env python3
 
-import unittest, random, sys
+"""
+testing module for mouse16.
+in the case of a failed test, please file an issue to https://github.com/catb0t/mouse16
+"""
+
+import unittest
+import sys
 from io import StringIO
 from contextlib import contextmanager
 
 
 @contextmanager
 def capture(command, *args, **kwargs):
+    """unused capturer for stdout."""
     out, sys.stdout = sys.stdout, StringIO()
     command(*args, **kwargs)
     sys.stdout.seek(0)
@@ -18,6 +25,7 @@ class CoreStack(unittest.TestCase):
     """core stack functions: direct interations with []Stack.stack"""
 
     def setUp(self):
+        """run at the initialisation of every test"""
         stack.clean()
 
     def test_inspect(self):
@@ -112,7 +120,7 @@ class CoreStack(unittest.TestCase):
     def test_insertn_fail(self):
         """expect failure during multiple insertion"""
         self.assertRaises(mouse16.BadInternalCallException,
-            stack.insertn([8, 4, 12], 16))
+                          stack.insertn([8, 4, 12], 16))
         with self.assertRaises(TypeError):
             stack.insertn(8, 16)
 
@@ -150,6 +158,7 @@ class Math(unittest.TestCase):
     proxied stack interactions, direct interaction with Python math operators"""
 
     def setUp(self):
+        """run at initialisation of each test"""
         stack.clean()
 
     # addition
@@ -173,6 +182,7 @@ class Math(unittest.TestCase):
         self.assertEqual(stack.pop(), "mouse16")
 
     def test_add_numstr_2(self):
+        """add another number to a string"""
         stack.pushn([7, "9"])
         stack.add()
         self.assertEqual(stack.pop(), 16)
@@ -267,6 +277,7 @@ class Math(unittest.TestCase):
             stack.dmd()
 
     def test_dmd_failure_2(self):
+        """expect failure during divmod"""
         stack.pushn(["8", 0])
         self.assertRaises(mouse16.TypeWarning, stack.dmd())
 
@@ -397,6 +408,7 @@ class StackOps(unittest.TestCase):
     """stack operators: proxied []Stack.stack interaction through CoreStack"""
 
     def setUp(self):
+        """run at initialisation of each test"""
         stack.clean()
 
     def test_dup(self):
@@ -429,7 +441,7 @@ class StackOps(unittest.TestCase):
         """rotate down the top three items on the stack"""
         stack.pushn([0, 1, 2, 3])
         stack.urot()
-        self.assertEqual
+        self.assertEqual(stack.inspect(), [0, 3, 1, 2])
 
     def test_roll(self):
         """roll the entire stack up"""
@@ -479,21 +491,6 @@ class StackOps(unittest.TestCase):
         with capture(stack.emit, (), ()) as output:
             self.assertEqual(output, "A")
 
-'''
-class Parsing(unittest.TestCase):
-    """tests specific to syntax and the parser, as well as the runner"""
-    pass
-
-class Runtime(unittest.TestCase):
-    """variables, memory, function defs/calls, core language features"""
-    pass
-
-class FailMe(unittest.TestCase):
-    """other things that should explicitly fail: zero division, for instance"""
-    pass
-'''
-
-
 if __name__ == '__main__':
     try:
         import mouse16
@@ -511,6 +508,6 @@ if __name__ == '__main__':
 
     mouse = mouse16.Mouse()
 
-    mouse16._fromfile = True  # make underflow & zero division raise SystemExit(4)
+    mouse16._FROMFILE = True  # make underflow & zero division raise SystemExit(4)
 
     unittest.main(verbosity=2)
